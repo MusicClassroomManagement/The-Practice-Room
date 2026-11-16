@@ -156,6 +156,17 @@ button.link { border: 0; background: none; color: var(--ink-soft); padding: 4px;
 .quote span { display: block; font-family: var(--body); font-size: 14.5px; font-weight: 400; color: var(--ink-soft); margin-top: 6px; }
 .cite { font-size: 14px; color: var(--ink-soft); }
 
+/* Survey launch + return */
+.launch { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; padding: 8px 4px; }
+.launch strong { display: block; font-family: var(--display); font-size: 22px; margin-bottom: 6px; }
+.launch p { color: var(--ink-soft); max-width: 60ch; }
+.btn.big { font-size: 18px; padding: 16px 26px; border-radius: 12px; }
+.pill.done { background: var(--ink); color: var(--paper); }
+.thanks { display: flex; align-items: center; gap: 16px; margin-top: 22px; padding: 14px 20px; background: var(--open-soft); border: 1px solid var(--open); border-radius: 16px; }
+.thanks img { width: 54px; }
+.thanks strong { display: block; color: var(--ink); }
+.thanks p { color: var(--ink-soft); font-size: 15.5px; }
+
 /* Module page */
 .back { display: inline-block; margin: 22px 0 6px; color: var(--ink-soft); font-size: 15px; }
 .mhead { display: grid; grid-template-columns: 150px 1fr; gap: 26px; align-items: center; padding: 10px 0 24px; }
@@ -264,6 +275,22 @@ let memoryPID = "";
 function getPID() { try { return localStorage.getItem(KEY) || memoryPID; } catch (e) { return memoryPID; } }
 function setPID(v) { memoryPID = v; try { if (v) localStorage.setItem(KEY, v); else localStorage.removeItem(KEY); } catch (e) {} }
 
+/* Finished surveys: Qualtrics sends students back with ?done=<id> */
+const DONEKEY = "practiceRoomDone";
+let memoryDone = [];
+function getDone() { try { return JSON.parse(localStorage.getItem(DONEKEY) || "[]"); } catch (e) { return memoryDone; } }
+function markDone(id) { const d = getDone(); if (!d.includes(id)) d.push(id); memoryDone = d; try { localStorage.setItem(DONEKEY, JSON.stringify(d)); } catch (e) {} }
+function isDone(id) { return getDone().includes(id); }
+let justFinished = "";
+(function readReturn() {
+  const q = new URLSearchParams(location.search);
+  const id = q.get("done");
+  if (!id) return;
+  const valid = id === "pre" || id === "post" || SETTINGS.modules.some(m => m.id === id);
+  if (valid) { markDone(id); justFinished = id; }
+  try { history.replaceState(null, "", location.pathname + "#home"); } catch (e) {}
+})();
+
 function withPID(url) {
   const pid = getPID();
   if (!url || !pid) return url;
@@ -353,15 +380,23 @@ function showForm(editing) {
 function home() {
   const bars = SETTINGS.modules.map(m => {
     const s = status(m);
+    const pill = isDone(m.id) ? `<span class="pill done">Done</span>` : `<span class="pill ${s.open ? "open" : "soon"}">${s.label}</span>`;
     return `<a class="bar" href="#${m.id}">
       <span class="mnum">Week ${m.week}</span>
       <img src="img/${m.img}.png" alt="">
       <h3>${m.name}</h3>
       <span class="what">${m.what}</span>
-      <span class="pill ${s.open ? "open" : "soon"}">${s.label}</span>
+      ${pill}
     </a>`;
   }).join("");
-  return `
+  let banner = "";
+  if (justFinished) {
+    const name = justFinished === "pre" ? "the Before week 1 survey" : justFinished === "post" ? "the After week 5 survey" : "Week " + SETTINGS.modules.find(m => m.id === justFinished).week + ": " + SETTINGS.modules.find(m => m.id === justFinished).name;
+    const nextLine = justFinished === "post" ? "That was the last step. Thank you for taking part in the study." : "Nice work. Your answers are saved. Come back for the next module when it opens.";
+    banner = `<div class="thanks" role="status"><img src="img/tempo.png" alt=""><div><strong>You finished ${esc(name)}.</strong><p>${nextLine}</p></div></div>`;
+    justFinished = "";
+  }
+  return `${banner}
     <section class="hero">
       <div>
         <h1>Five ways to run a music classroom.</h1>
@@ -391,8 +426,8 @@ function home() {
     <div class="section-head"><h2>Your five modules</h2><p>One module per week, about 5 scenes each.</p></div>
     <nav class="map" aria-label="Modules by week">${bars}</nav>
     <div class="bookends">
-      <a class="panel bookend" href="#pre"><span class="tag">Start</span><div><h3>Before week 1</h3><p>A short survey about where you are now.</p></div></a>
-      <a class="panel bookend" href="#post"><span class="tag">Finish</span><div><h3>After week 5</h3><p>The same survey again, to see what changed.</p></div></a>
+      <a class="panel bookend" href="#pre"><span class="tag">${isDone("pre") ? "Done" : "Start"}</span><div><h3>Before week 1</h3><p>A short survey about where you are now.</p></div></a>
+      <a class="panel bookend" href="#post"><span class="tag">${isDone("post") ? "Done" : "Finish"}</span><div><h3>After week 5</h3><p>The same survey again, to see what changed.</p></div></a>
     </div>
     <details class="panel research" id="research">
       <summary>
@@ -431,7 +466,7 @@ function home() {
     </details>`;
 }
 
-function surveyBlock(url, label, open, opensLabel) {
+function surveyBlock(url, label, open, opensLabel, id) {
   const pid = getPID();
   if (!pid) {
     return `<div class="placeholder"><div><strong>Make your study code first.</strong><p>The survey needs your code so your answers connect across weeks.</p></div><a class="btn" href="#home">Make my code</a></div>`;
@@ -443,11 +478,16 @@ function surveyBlock(url, label, open, opensLabel) {
     return `<div class="placeholder"><div><strong>The ${esc(label)} survey will appear here.</strong><p>Its Qualtrics link has not been added yet.</p></div></div>`;
   }
   const full = withPID(url);
-  return `<div class="survey-bar">
-      <p>If the survey does not load, or you want to stop and come back later, open it in a new tab. Your code goes with it.</p>
-      <a class="btn ghost" href="${esc(full)}" target="_blank" rel="noopener">Open in a new tab</a>
-    </div>
-    <iframe class="frame" src="${esc(full)}" title="${esc(label)} survey" allow="fullscreen"></iframe>`;
+  const done = isDone(id);
+  return `<div class="launch">
+      <div>
+        <strong>${done ? "You finished this survey." : "Ready when you are."}</strong>
+        <p>${done
+          ? "You can open it again if you need to. When you finish, you will come back to The Practice Room home page."
+          : "The survey opens in this window. Your study code goes with it, and when you finish you will come back to The Practice Room home page automatically. If you stop partway, click Start again later to pick up where you left off."}</p>
+      </div>
+      <a class="btn big" href="${esc(full)}">${done ? "Open the survey again" : "Start the survey"}</a>
+    </div>`;
 }
 
 function moduleView(m) {
@@ -469,7 +509,7 @@ function moduleView(m) {
       <div class="step"><strong>Compare with music educators</strong><span>Read their feedback next to your own answers.</span></div>
       <div class="step"><strong>Set one goal</strong><span>A specific step for your next teaching experience.</span></div>
     </div>
-    <section class="panel survey" aria-label="${m.name} survey">${surveyBlock(m.url, m.name, s.open, s.label)}</section>`;
+    <section class="panel survey" aria-label="${m.name} survey">${surveyBlock(m.url, m.name, s.open, s.label, m.id)}</section>`;
 }
 
 function bookendView(which) {
@@ -485,7 +525,7 @@ function bookendView(which) {
       <img src="img/tempo.png" alt="">
       <div><span class="eyebrow">${which === "pre" ? "Start here" : "Last step"}</span><h1>${title}</h1><p class="def">${text}</p></div>
     </section>
-    <section class="panel survey" aria-label="${title} survey">${surveyBlock(item.url, which === "pre" ? "pre-module" : "post-module", s.open, s.label)}</section>`;
+    <section class="panel survey" aria-label="${title} survey">${surveyBlock(item.url, which === "pre" ? "pre-module" : "post-module", s.open, s.label, which)}</section>`;
 }
 
 function render() {
