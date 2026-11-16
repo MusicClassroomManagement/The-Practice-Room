@@ -115,8 +115,16 @@ button.link { border: 0; background: none; color: var(--ink-soft); padding: 4px;
 .bookend p { color: var(--ink-soft); font-size: 15px; }
 
 /* Why these five (home) */
-.why5 { display: grid; grid-template-columns: 1.15fr 1fr; gap: 24px; align-items: center; margin-bottom: 16px; border-left: 6px solid var(--coral); }
-.why5 .eyebrow { font-weight: 700; color: var(--coral); letter-spacing: 0.06em; text-transform: uppercase; font-size: 14px; display: block; margin-bottom: 6px; }
+.why5 { margin-bottom: 16px; border-left: 6px solid var(--coral); padding: 0; overflow: hidden; }
+.why5 summary { list-style: none; cursor: pointer; padding: 14px 22px; display: flex; align-items: center; gap: 16px; }
+.why5 summary::-webkit-details-marker { display: none; }
+.why5 summary img { height: 64px; width: auto; flex: none; }
+.why5 summary .ttl { flex: 1; }
+.why5 summary h2 { font-size: 24px; }
+.why5 summary .chev { font: 800 22px/1 var(--display); color: var(--coral); transition: transform .2s ease; }
+.why5[open] summary .chev { transform: rotate(45deg); }
+.why5 .body { display: grid; grid-template-columns: 1.15fr 1fr; gap: 24px; align-items: center; padding: 20px 22px 22px; border-top: 1px solid var(--line); }
+.why5 .eyebrow { font-weight: 700; color: var(--coral); letter-spacing: 0.06em; text-transform: uppercase; font-size: 14px; display: block; margin-bottom: 4px; }
 .why5 p.copy { color: var(--ink-soft); margin-top: 8px; max-width: 58ch; }
 .why5 p.copy strong { color: var(--ink); }
 .why5 button.link { margin-top: 8px; padding: 4px 0; }
@@ -183,7 +191,7 @@ footer .wrap { display: grid; gap: 6px; }
   .bar:last-child { border-bottom: 0; }
   .bar img { grid-row: 1 / span 4; height: 90px; margin: 0; }
   .steps { grid-template-columns: 1fr 1fr; }
-  .why5, .cols { grid-template-columns: 1fr; }
+  .why5 .body, .cols { grid-template-columns: 1fr; }
 }
 @media (max-width: 620px) {
   .hero { grid-template-columns: 1fr; }
@@ -361,11 +369,15 @@ function home() {
       </div>
       <img src="img/tempo.png" alt="Tempo, a smiling wooden metronome, waving hello">
     </section>
-    <section class="panel why5" aria-labelledby="why5title">
+    <details class="panel why5">
+      <summary>
+        <img src="img/ollie.png" alt="">
+        <div class="ttl"><span class="eyebrow">Why these five?</span><h2>The Big Five of classroom management</h2></div>
+        <span class="chev" aria-hidden="true">+</span>
+      </summary>
+      <div class="body">
       <div>
-        <span class="eyebrow">Why these five?</span>
-        <h2 id="why5title">The Big Five of classroom management</h2>
-        <p class="copy"><strong>Rules, Routines, Praise, Misbehavior, and Engagement</strong> are the five strategies with the strongest research support for preventing and handling behavior problems, drawn from more than 150 studies across six decades. Most new teachers are never taught all five. This is where you practice them.</p>
+        <p class="copy" style="margin-top:0"><strong>Rules, Routines, Praise, Misbehavior, and Engagement</strong> are the five strategies with the strongest research support for preventing and handling behavior problems, drawn from more than 150 studies across six decades. Most new teachers are never taught all five. This is where you practice them.</p>
         <button class="link" type="button" id="readresearch">Read about the research</button>
       </div>
       <div class="stats">
@@ -373,7 +385,8 @@ function home() {
         <div class="stat"><b>21%</b><span>of teacher prep programs teach all five</span></div>
         <div class="stat"><b>26%</b><span>teach Praise, one of the best-supported strategies</span></div>
       </div>
-    </section>
+      </div>
+    </details>
     <div id="idslot">${idCardHTML(false)}</div>
     <div class="section-head"><h2>Your five modules</h2><p>One module per week, about 5 scenes each.</p></div>
     <nav class="map" aria-label="Modules by week">${bars}</nav>
