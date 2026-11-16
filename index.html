@@ -114,6 +114,40 @@ button.link { border: 0; background: none; color: var(--ink-soft); padding: 4px;
 .bookend .tag { font: 800 14px/1 var(--display); background: var(--ink); color: var(--paper); border-radius: 8px; padding: 10px; min-width: 64px; text-align: center; }
 .bookend p { color: var(--ink-soft); font-size: 15px; }
 
+/* Why these five (home) */
+.why5 { display: grid; grid-template-columns: 1.15fr 1fr; gap: 24px; align-items: center; margin-bottom: 16px; border-left: 6px solid var(--coral); }
+.why5 .eyebrow { font-weight: 700; color: var(--coral); letter-spacing: 0.06em; text-transform: uppercase; font-size: 14px; display: block; margin-bottom: 6px; }
+.why5 p.copy { color: var(--ink-soft); margin-top: 8px; max-width: 58ch; }
+.why5 p.copy strong { color: var(--ink); }
+.why5 button.link { margin-top: 8px; padding: 4px 0; }
+.stats { display: grid; gap: 10px; }
+.stat { display: grid; grid-template-columns: 92px 1fr; gap: 12px; align-items: center; background: var(--paper); border-radius: 12px; padding: 10px 14px; }
+.stat b { font: 800 30px/1 var(--display); color: var(--ink); }
+.stat span { font-size: 15px; color: var(--ink-soft); line-height: 1.35; }
+
+/* About the research (home) */
+.research { margin-top: 38px; padding: 0; overflow: hidden; }
+.research summary { list-style: none; cursor: pointer; padding: 20px 22px; display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+.research summary::-webkit-details-marker { display: none; }
+.research summary h2 { font-size: 24px; }
+.research summary .sub { display: block; font-family: var(--body); font-size: 15px; font-weight: 400; color: var(--ink-soft); margin-top: 4px; }
+.research summary .chev { font: 800 22px/1 var(--display); color: var(--wood); transition: transform .2s ease; }
+.research[open] summary .chev { transform: rotate(45deg); }
+.research .body { padding: 0 22px 24px; display: grid; gap: 18px; border-top: 1px solid var(--line); padding-top: 20px; }
+.research h3 { font-size: 19px; margin-bottom: 6px; }
+.research p { color: var(--ink-soft); max-width: 70ch; }
+.research p strong { color: var(--ink); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.taught { display: grid; gap: 8px; margin-top: 4px; }
+.taught .row { display: grid; grid-template-columns: 110px 1fr 46px; gap: 10px; align-items: center; font-size: 15px; }
+.taught .track { height: 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.taught .fill { height: 100%; background: var(--wood); border-radius: 999px; }
+.taught .row.low .fill { background: var(--coral); }
+.taught .pct { font-weight: 700; text-align: right; }
+.quote { border-left: 4px solid var(--wood); padding: 6px 0 6px 16px; font-family: var(--display); font-size: 21px; font-weight: 600; line-height: 1.3; color: var(--ink); }
+.quote span { display: block; font-family: var(--body); font-size: 14.5px; font-weight: 400; color: var(--ink-soft); margin-top: 6px; }
+.cite { font-size: 14px; color: var(--ink-soft); }
+
 /* Module page */
 .back { display: inline-block; margin: 22px 0 6px; color: var(--ink-soft); font-size: 15px; }
 .mhead { display: grid; grid-template-columns: 150px 1fr; gap: 26px; align-items: center; padding: 10px 0 24px; }
@@ -149,6 +183,7 @@ footer .wrap { display: grid; gap: 6px; }
   .bar:last-child { border-bottom: 0; }
   .bar img { grid-row: 1 / span 4; height: 90px; margin: 0; }
   .steps { grid-template-columns: 1fr 1fr; }
+  .why5, .cols { grid-template-columns: 1fr; }
 }
 @media (max-width: 620px) {
   .hero { grid-template-columns: 1fr; }
@@ -156,6 +191,7 @@ footer .wrap { display: grid; gap: 6px; }
   .idfields { grid-template-columns: 1fr; }
   .field .hint { min-height: 0; }
   .bookends { grid-template-columns: 1fr; }
+  .taught .row { grid-template-columns: 92px 1fr 42px; }
   .mhead { grid-template-columns: 1fr; }
   .mhead img { width: 110px; }
   .steps { grid-template-columns: 1fr; }
@@ -325,13 +361,61 @@ function home() {
       </div>
       <img src="img/tempo.png" alt="Tempo, a smiling wooden metronome, waving hello">
     </section>
+    <section class="panel why5" aria-labelledby="why5title">
+      <div>
+        <span class="eyebrow">Why these five?</span>
+        <h2 id="why5title">The Big Five of classroom management</h2>
+        <p class="copy"><strong>Rules, Routines, Praise, Misbehavior, and Engagement</strong> are the five strategies with the strongest research support for preventing and handling behavior problems, drawn from more than 150 studies across six decades. Most new teachers are never taught all five. This is where you practice them.</p>
+        <button class="link" type="button" id="readresearch">Read about the research</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>150+</b><span>studies over six decades point to the same five strategies</span></div>
+        <div class="stat"><b>21%</b><span>of teacher prep programs teach all five</span></div>
+        <div class="stat"><b>26%</b><span>teach Praise, one of the best-supported strategies</span></div>
+      </div>
+    </section>
     <div id="idslot">${idCardHTML(false)}</div>
     <div class="section-head"><h2>Your five modules</h2><p>One module per week, about 5 scenes each.</p></div>
     <nav class="map" aria-label="Modules by week">${bars}</nav>
     <div class="bookends">
       <a class="panel bookend" href="#pre"><span class="tag">Start</span><div><h3>Before week 1</h3><p>A short survey about where you are now.</p></div></a>
       <a class="panel bookend" href="#post"><span class="tag">Finish</span><div><h3>After week 5</h3><p>The same survey again, to see what changed.</p></div></a>
-    </div>`;
+    </div>
+    <details class="panel research" id="research">
+      <summary>
+        <div><h2>About the research</h2><span class="sub">Why classroom management training matters, and where the Big Five come from.</span></div>
+        <span class="chev" aria-hidden="true">+</span>
+      </summary>
+      <div class="body">
+        <div class="cols">
+          <div>
+            <h3>Where the Big Five come from</h3>
+            <p>The National Council on Teacher Quality reviewed three major research summaries covering more than 150 studies from PK-12 classrooms (Simonsen et al., 2008; Oliver, Wehby, &amp; Reschly, 2011; Institute of Education Sciences, 2008). Across them, five strategies kept showing strong evidence of effectiveness. NCTQ named them the <strong>Big Five</strong> and recommended that every teacher candidate learn and practice them.</p>
+          </div>
+          <div>
+            <h3>Why training matters</h3>
+            <p>Classroom management is one of the hardest parts of the first years of teaching, yet it is unevenly taught. In NCTQ's review of 105 programs, only <strong>32%</strong> addressed at least four of the Big Five and only <strong>21%</strong> addressed all five. Programs that taught more of the Big Five were also far more likely to give candidates a chance to practice them (52% compared with 20%).</p>
+          </div>
+        </div>
+        <div>
+          <h3>How often each strategy is taught</h3>
+          <p>Share of teacher prep programs that address each strategy in foundational coursework (N = 105).</p>
+          <div class="taught" role="list">
+            <div class="row" role="listitem"><span>Routines</span><div class="track"><div class="fill" style="width:76%"></div></div><span class="pct">76%</span></div>
+            <div class="row" role="listitem"><span>Rules</span><div class="track"><div class="fill" style="width:71%"></div></div><span class="pct">71%</span></div>
+            <div class="row" role="listitem"><span>Misbehavior</span><div class="track"><div class="fill" style="width:62%"></div></div><span class="pct">62%</span></div>
+            <div class="row low" role="listitem"><span>Engagement</span><div class="track"><div class="fill" style="width:49%"></div></div><span class="pct">49%</span></div>
+            <div class="row low" role="listitem"><span>Praise</span><div class="track"><div class="fill" style="width:26%"></div></div><span class="pct">26%</span></div>
+          </div>
+        </div>
+        <div>
+          <h3>Why a practice room</h3>
+          <p>Knowing a strategy is not the same as using it in the moment. Music classrooms add their own challenges: instruments, movement, sound, and large groups. The Practice Room gives you short, realistic scenes where you decide what to do, compare your plan with feedback from music educators, and set a goal for your own teaching, one strategy per week.</p>
+        </div>
+        <p class="quote">"Your best lesson plan of the year won't go well if you don't have good classroom management."<span>Third-year teacher, NCTQ survey respondent</span></p>
+        <p class="cite">Source: Greenberg, J., Putman, H., &amp; Walsh, K. (2014). <em>Training our future teachers: Classroom management.</em> National Council on Teacher Quality.</p>
+      </div>
+    </details>`;
 }
 
 function surveyBlock(url, label, open, opensLabel) {
@@ -397,7 +481,15 @@ function render() {
   const m = SETTINGS.modules.find(x => x.id === h);
   if (m) { app.innerHTML = moduleView(m); document.title = m.name + " | The Practice Room"; }
   else if (h === "pre" || h === "post") { app.innerHTML = bookendView(h); document.title = (h === "pre" ? "Before week 1" : "After week 5") + " | The Practice Room"; }
-  else { app.innerHTML = home(); bindForm(); document.title = "The Practice Room"; }
+  else {
+    app.innerHTML = home(); bindForm(); document.title = "The Practice Room";
+    const rr = document.getElementById("readresearch");
+    if (rr) rr.addEventListener("click", () => {
+      const d = document.getElementById("research");
+      d.open = true;
+      d.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
   renderChip();
   window.scrollTo(0, 0);
 }
