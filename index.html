@@ -133,6 +133,49 @@ button.link { border: 0; background: none; color: var(--ink-soft); padding: 4px;
 .stat b { font: 800 30px/1 var(--display); color: var(--ink); }
 .stat span { font-size: 15px; color: var(--ink-soft); line-height: 1.35; }
 
+/* Ten strategies overlap map (home) */
+.ten { margin-bottom: 16px; border-left: 6px solid var(--open); }
+.ten .eyebrow { font-weight: 700; color: var(--open); letter-spacing: 0.06em; text-transform: uppercase; font-size: 14px; display: block; margin-bottom: 4px; }
+.ten > p.copy { color: var(--ink-soft); margin-top: 8px; max-width: 70ch; }
+.ten > p.copy strong { color: var(--ink); }
+.ten .grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: center; margin-top: 18px; }
+.ten svg { width: 100%; height: auto; display: block; touch-action: manipulation; }
+.ten .c { transition: fill-opacity .2s ease, stroke-width .2s ease, opacity .2s ease; cursor: pointer; }
+.ten .c.big { fill: var(--wood); fill-opacity: .17; stroke: var(--wood); stroke-width: 2; }
+.ten .c.sec { fill: var(--open); fill-opacity: .12; stroke: var(--open); stroke-width: 2; stroke-dasharray: 6 5; }
+.ten .lbl { font-family: var(--display); font-weight: 800; fill: var(--ink); pointer-events: none; transition: opacity .2s ease; }
+.ten .lbl.big { font-size: 19px; }
+.ten .lbl.sec { font-size: 15.5px; font-weight: 600; }
+.ten .lbl.mid { font-size: 14px; font-weight: 600; fill: var(--ink-soft); letter-spacing: .04em; }
+.ten .hub { fill: var(--card); stroke: var(--wood); stroke-width: 1.5; pointer-events: none; }
+.ten g.node:focus { outline: none; }
+.ten g.node:focus-visible .c { stroke: var(--ink); stroke-width: 3.5; }
+.ten svg.has-active .c { fill-opacity: .05; opacity: .55; }
+.ten svg.has-active .lbl:not(.mid) { opacity: .4; }
+.ten svg.has-active .c.partner { fill-opacity: .26; opacity: 1; }
+.ten svg.has-active .lbl.partner { opacity: 1; }
+.ten svg.has-active .c.active { fill-opacity: .5; opacity: 1; stroke-width: 3.5; }
+.ten svg.has-active .lbl.active { opacity: 1; }
+.ten .key { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14.5px; color: var(--ink-soft); margin-top: 10px; justify-content: center; }
+.ten .key span { display: inline-flex; align-items: center; gap: 8px; }
+.ten .key i { width: 18px; height: 18px; border-radius: 50%; display: inline-block; }
+.ten .key i.big { background: color-mix(in srgb, var(--wood) 30%, transparent); border: 2px solid var(--wood); }
+.ten .key i.sec { background: color-mix(in srgb, var(--open) 20%, transparent); border: 2px dashed var(--open); }
+.ten .info { background: var(--paper); border-radius: 14px; padding: 18px 20px; min-height: 340px; }
+.ten .info .tier { font: 700 13px/1 var(--body); padding: 6px 10px; border-radius: 999px; display: inline-block; margin-bottom: 10px; }
+.ten .info .tier.big { background: var(--wood-soft); color: var(--ink); }
+.ten .info .tier.sec { background: var(--open-soft); color: var(--open); }
+.ten .info .tier.all { background: var(--line); color: var(--ink); }
+.ten .info h3 { font-size: 22px; }
+.ten .info p { color: var(--ink-soft); margin-top: 8px; font-size: 16px; }
+.ten .info .ex { margin-top: 12px; padding: 10px 12px; background: var(--card); border-radius: 10px; font-size: 15px; color: var(--ink); }
+.ten .info .ex b { display: block; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 2px; }
+.ten .info h4 { font: 700 13px/1 var(--body); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); margin: 16px 0 8px; }
+.ten .info ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.ten .info li { font-size: 15px; color: var(--ink-soft); line-height: 1.4; }
+.ten .info li strong { color: var(--ink); }
+.ten .info .hintline { color: var(--ink-soft); font-size: 15px; margin-top: 14px; }
+
 /* About the research (home) */
 .research { margin-top: 38px; padding: 0; overflow: hidden; }
 .research summary { list-style: none; cursor: pointer; padding: 20px 22px; display: flex; justify-content: space-between; align-items: center; gap: 14px; }
@@ -202,7 +245,8 @@ footer .wrap { display: grid; gap: 6px; }
   .bar:last-child { border-bottom: 0; }
   .bar img { grid-row: 1 / span 4; height: 90px; margin: 0; }
   .steps { grid-template-columns: 1fr 1fr; }
-  .why5 .body, .cols { grid-template-columns: 1fr; }
+  .why5 .body, .cols, .ten .grid { grid-template-columns: 1fr; }
+  .ten .info { min-height: 0; }
 }
 @media (max-width: 620px) {
   .hero { grid-template-columns: 1fr; }
@@ -376,6 +420,180 @@ function showForm(editing) {
   if (editing) { const first = document.getElementById("p1"); if (first) first.focus(); }
 }
 
+/* ---------- Ten strategies overlap map ----------
+   Big Five sit in a ring of overlapping circles. Each secondary strategy sits
+   between the two Big Five strategies it overlaps with most (based on NCTQ, 2014). */
+const TEN = {
+  big: [
+    { id: "rules", name: "Rules",
+      def: "A few clear, positively stated expectations, taught directly and applied fairly.",
+      ex: "Instruments stay on the floor until the teacher gives the cue." },
+    { id: "routines", name: "Routines",
+      def: "Taught procedures for moments that happen again and again, so students know what to do without being told each time.",
+      ex: "A set way to enter, pick up mallets, and find a spot on the rug." },
+    { id: "engagement", name: "Engagement",
+      def: "Active, well-paced lessons with frequent chances to take part, so there is little room to act out.",
+      ex: "Everyone echoes, moves, or plays every few seconds instead of waiting for a turn." },
+    { id: "praise", name: "Praise",
+      def: "Specific, sincere recognition of the behavior you want to see more of, given right after it happens.",
+      ex: "“Altos, you came in right on the downbeat because you watched my hand.”" },
+    { id: "misbehavior", name: "Misbehavior",
+      def: "Calm, consistent consequences that fit the behavior and escalate in clear, predictable steps.",
+      ex: "A student who keeps playing after the cutoff sets the drum down for the next song." }
+  ],
+  sec: [
+    { id: "sce", name: "Social, Cultural & Emotional Factors", lines: ["Social, Cultural", "& Emotional"],
+      def: "Keeping a positive, culturally responsive climate where every student feels they belong.",
+      ex: "Choosing songs from students’ own cultures, and noticing the student who has quietly stopped singing." },
+    { id: "environment", name: "Physical Environment", lines: ["Physical", "Environment"],
+      def: "Setting up the room so you can see everyone, traffic flows smoothly, and seating supports the lesson.",
+      ex: "Placing instrument bins where students can reach them without crowding, and seating two chatty friends apart." },
+    { id: "motivation", name: "Motivating Students", lines: ["Motivating", "Students"],
+      def: "Building students’ desire to learn and follow expectations. Engagement is about doing; motivation is about wanting to.",
+      ex: "Letting the class earn a favorite singing game, or choose the next song." },
+    { id: "parents", name: "Involving Parents & Community", lines: ["Involving", "Parents &", "Community"],
+      def: "Working with families and the wider school beyond your classroom walls.",
+      ex: "A positive note home after a student’s first steady solo, or a call home when a pattern keeps repeating." },
+    { id: "least", name: "Least Intrusive Means", lines: ["Least", "Intrusive", "Means"],
+      def: "Subtle moves that stop small problems early: moving closer, a look, a quick rule reminder, or a question.",
+      ex: "Walking toward the back row while still conducting, without stopping the song." }
+  ],
+  links: [
+    ["rules", "routines", "Rules say what is expected; routines show how, step by step. Research supports using both together."],
+    ["routines", "engagement", "Smooth transitions keep the music going, so there is less downtime to fill."],
+    ["engagement", "praise", "Recognizing participation pulls more students into the activity."],
+    ["praise", "misbehavior", "Both shape behavior: praise strengthens what you want, consequences respond to what you do not."],
+    ["misbehavior", "rules", "A consequence only feels fair when the rule was clear and taught first."],
+    ["sce", "rules", "Fair rules are one of the main ways teachers build trust and relationships."],
+    ["sce", "routines", "Predictable routines help students feel safe and know they belong."],
+    ["environment", "routines", "Where things are in the room shapes how smoothly routines run."],
+    ["environment", "engagement", "Seating and grouping can be arranged to keep everyone involved and visible."],
+    ["motivation", "engagement", "Engagement is doing; motivation is wanting to. Each feeds the other."],
+    ["motivation", "praise", "Praise and earned rewards can build motivation without hurting it."],
+    ["parents", "praise", "A positive call or note home carries praise beyond the classroom."],
+    ["parents", "misbehavior", "A meeting with parents can be one step in a plan of consequences."],
+    ["least", "misbehavior", "The lightest, first response to budding misbehavior, before any consequence."],
+    ["least", "rules", "A quick, quiet rule reminder is one of the least intrusive moves."]
+  ]
+};
+const TEN_GEO = (() => {
+  const rad = d => d * Math.PI / 180, g = {};
+  TEN.big.forEach((s, i) => {
+    const a = rad(-90 + 72 * i);
+    g[s.id] = { x: 95 * Math.cos(a), y: 95 * Math.sin(a), r: 105, lx: 138 * Math.cos(a), ly: 138 * Math.sin(a) };
+  });
+  TEN.sec.forEach((s, i) => {
+    const a = rad(-90 + 72 * i + 36);
+    g[s.id] = { x: 205 * Math.cos(a), y: 205 * Math.sin(a), r: 70, lx: 222 * Math.cos(a), ly: 222 * Math.sin(a) };
+  });
+  return g;
+})();
+function tenFind(id) { return TEN.big.find(s => s.id === id) || TEN.sec.find(s => s.id === id); }
+function tenPartners(id) {
+  return TEN.links.filter(l => l[0] === id || l[1] === id).map(l => ({ id: l[0] === id ? l[1] : l[0], why: l[2] }));
+}
+function tenHTML() {
+  const node = (s, tier) => {
+    const g = TEN_GEO[s.id];
+    const lines = tier === "big" ? [s.name] : s.lines;
+    const lh = 17, y0 = g.ly - (lines.length - 1) * lh / 2;
+    const text = lines.map((t, k) => `<tspan x="${g.lx.toFixed(1)}" y="${(y0 + k * lh).toFixed(1)}">${esc(t)}</tspan>`).join("");
+    return `<g class="node" data-id="${s.id}" tabindex="0" role="button" aria-label="${esc(s.name)}, ${tier === "big" ? "Big Five" : "secondary"} strategy">
+      <circle class="c ${tier}" data-id="${s.id}" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${g.r}"></circle></g>`
+      + `<text class="lbl ${tier}" data-id="${s.id}" text-anchor="middle" dominant-baseline="central">${text}</text>`;
+  };
+  const circles = TEN.sec.map(s => node(s, "sec")).join("") + TEN.big.map(s => node(s, "big")).join("");
+  return `<section class="panel ten" aria-labelledby="tentitle">
+    <span class="eyebrow">The bigger picture</span>
+    <h2 id="tentitle">Ten strategies, one classroom</h2>
+    <p class="copy">NCTQ names <strong>five key strategies</strong> (the Big Five) and <strong>five secondary strategies</strong> that matter too but have less research behind them. Your modules focus on the Big Five, one per week. In a real music class, though, strategies rarely work alone: they overlap with each other, and the secondary five often show up inside the same moments. Hover over or tap a circle to see what it means and where it overlaps.</p>
+    <div class="grid">
+      <div>
+        <svg id="tensvg" viewBox="-280 -280 560 560" role="group" aria-label="Diagram of the ten classroom management strategies and how they overlap">
+          ${circles}
+          <circle class="hub" cx="0" cy="0" r="38"></circle>
+          <text class="lbl mid" x="0" y="-8" text-anchor="middle" dominant-baseline="central">THE</text>
+          <text class="lbl mid" x="0" y="9" text-anchor="middle" dominant-baseline="central">BIG FIVE</text>
+        </svg>
+        <div class="key"><span><i class="big"></i>Big Five (your weekly modules)</span><span><i class="sec"></i>Secondary strategies</span></div>
+      </div>
+      <div class="info" id="teninfo" aria-live="polite"></div>
+    </div>
+    <p class="cite" style="margin-top:14px">Strategy names and definitions adapted from Greenberg, Putman, &amp; Walsh (2014), National Council on Teacher Quality. Music examples are our own.</p>
+  </section>`;
+}
+function tenInfoHTML(id) {
+  if (!id) {
+    return `<span class="tier all">Start here</span>
+      <h3>How the strategies connect</h3>
+      <p>The <strong style="color:var(--ink)">gold circles</strong> are the Big Five. Each overlaps its neighbors, because one moment in class usually calls on more than one strategy.</p>
+      <p>The <strong style="color:var(--ink)">green dashed circles</strong> are the secondary five. Each sits where it overlaps most with two of the Big Five.</p>
+      <p class="hintline">Hover over or tap any circle to see its definition, a music classroom example, and its overlaps. Tap again to let go.</p>`;
+  }
+  if (id === "center") {
+    return `<span class="tier big">Where all five meet</span>
+      <h3>The Big Five together</h3>
+      <p>In the middle, all five key strategies overlap. A well-run music class uses them at once: clear rules and routines, steady engagement, frequent specific praise, and calm responses when something goes wrong.</p>
+      <p class="hintline">Hover over or tap a single circle to see it on its own.</p>`;
+  }
+  const s = tenFind(id), isBig = TEN.big.some(b => b.id === id);
+  const parts = tenPartners(id).map(p => `<li><strong>${esc(tenFind(p.id).name)}.</strong> ${esc(p.why)}</li>`).join("");
+  return `<span class="tier ${isBig ? "big" : "sec"}">${isBig ? "Big Five strategy" : "Secondary strategy"}</span>
+    <h3>${esc(s.name)}</h3>
+    <p>${esc(s.def)}</p>
+    <div class="ex"><b>In a music class</b>${esc(s.ex)}</div>
+    <h4>Overlaps with</h4>
+    <ul>${parts}</ul>`;
+}
+function bindTen() {
+  const svg = document.getElementById("tensvg"), info = document.getElementById("teninfo");
+  if (!svg || !info) return;
+  let pinned = null, shown;
+  const show = id => {
+    if (id === shown) return;
+    shown = id;
+    const partners = id && id !== "center" ? tenPartners(id).map(p => p.id) : [];
+    const centerIds = id === "center" ? TEN.big.map(b => b.id) : [];
+    svg.classList.toggle("has-active", !!id);
+    svg.querySelectorAll("[data-id]").forEach(el => {
+      const d = el.getAttribute("data-id");
+      el.classList.toggle("active", d === id || centerIds.includes(d));
+      el.classList.toggle("partner", partners.includes(d));
+    });
+    info.innerHTML = tenInfoHTML(id);
+  };
+  /* In overlap areas, pick the circle whose center is closest (relative to its size). */
+  const pick = ev => {
+    const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const m = svg.getScreenCTM(); if (!m) return null;
+    const p = pt.matrixTransform(m.inverse());
+    if (Math.hypot(p.x, p.y) < 38) return "center";
+    let best = null, bestD = 1;
+    Object.keys(TEN_GEO).forEach(id => {
+      const g = TEN_GEO[id], d = Math.hypot(p.x - g.x, p.y - g.y) / g.r;
+      if (d < bestD) { bestD = d; best = id; }
+    });
+    return best;
+  };
+  svg.addEventListener("mousemove", ev => { if (!pinned) show(pick(ev)); });
+  svg.addEventListener("mouseleave", () => { if (!pinned) show(null); });
+  let pointer = false;
+  svg.addEventListener("pointerdown", () => { pointer = true; });
+  svg.addEventListener("click", ev => {
+    pointer = false;
+    const id = pick(ev);
+    pinned = (id && id !== pinned) ? id : null;
+    show(pinned);
+  });
+  svg.querySelectorAll("g.node").forEach(n => {
+    const id = n.getAttribute("data-id");
+    n.addEventListener("focus", () => { if (pointer) return; pinned = id; show(id); });
+    n.addEventListener("blur", () => { if (pointer) return; pinned = null; show(null); });
+    n.addEventListener("keydown", ev => { if (ev.key === "Escape") n.blur(); });
+  });
+  show(null);
+}
+
 /* ---------- Views ---------- */
 function home() {
   const bars = SETTINGS.modules.map(m => {
@@ -422,6 +640,7 @@ function home() {
       </div>
       </div>
     </details>
+    ${tenHTML()}
     <div id="idslot">${idCardHTML(false)}</div>
     <div class="section-head"><h2>Your five modules</h2><p>One module per week, about 5 scenes each.</p></div>
     <nav class="map" aria-label="Modules by week">${bars}</nav>
@@ -535,7 +754,7 @@ function render() {
   if (m) { app.innerHTML = moduleView(m); document.title = m.name + " | The Practice Room"; }
   else if (h === "pre" || h === "post") { app.innerHTML = bookendView(h); document.title = (h === "pre" ? "Before week 1" : "After week 5") + " | The Practice Room"; }
   else {
-    app.innerHTML = home(); bindForm(); document.title = "The Practice Room";
+    app.innerHTML = home(); bindForm(); bindTen(); document.title = "The Practice Room";
     const rr = document.getElementById("readresearch");
     if (rr) rr.addEventListener("click", () => {
       const d = document.getElementById("research");
