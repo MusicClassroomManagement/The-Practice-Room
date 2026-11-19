@@ -708,11 +708,15 @@ function surveyBlock(url, label, open, opensLabel, id) {
     return `<div class="launch">
       <div>
         <strong>You finished this survey.</strong>
-        <p>Thank you. Your answers are saved. You can open the survey again in a new tab if you need to.</p>
+        <p>Thank you. Your answers are saved. You can open the survey again on this page if you need to.</p>
       </div>
-      <a class="btn ghost" href="${esc(full)}" target="_blank" rel="noopener">Open the survey again</a>
+      <button class="ghost" type="button" data-reopen="${esc(full)}" data-label="${esc(label)}">Open the survey again</button>
     </div>`;
   }
+  return embedHTML(full, label);
+}
+
+function embedHTML(full, label) {
   return `<div class="survey-bar">
       <p>The survey runs right here on this page, and your study code goes with it. If it does not load, or you want to stop and finish later, open it in a new tab.</p>
       <a class="btn ghost" href="${esc(full)}" target="_blank" rel="noopener">Open in a new tab</a>
@@ -777,6 +781,12 @@ function render() {
   window.scrollTo(0, 0);
 }
 window.addEventListener("hashchange", render);
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-reopen]");
+  if (!b) return;
+  const box = b.closest(".survey");
+  if (box) box.innerHTML = embedHTML(b.getAttribute("data-reopen"), b.getAttribute("data-label"));
+});
 render();
 </script>
 </body>
