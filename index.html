@@ -331,6 +331,11 @@ let justFinished = "";
   const id = q.get("done");
   if (!id) return;
   const valid = id === "pre" || id === "post" || SETTINGS.modules.some(m => m.id === id);
+  // When the survey ends inside the embedded frame, Qualtrics sends this page into the frame.
+  // Reload the whole window instead, so the site does not appear inside itself.
+  if (window.self !== window.top) {
+    try { window.top.location.replace(location.pathname + "?done=" + encodeURIComponent(id)); return; } catch (e) {}
+  }
   if (valid) { markDone(id); justFinished = id; }
   try { history.replaceState(null, "", location.pathname + "#home"); } catch (e) {}
 })();
@@ -697,16 +702,20 @@ function surveyBlock(url, label, open, opensLabel, id) {
     return `<div class="placeholder"><div><strong>The ${esc(label)} survey will appear here.</strong><p>Its Qualtrics link has not been added yet.</p></div></div>`;
   }
   const full = withPID(url);
-  const done = isDone(id);
-  return `<div class="launch">
+  if (isDone(id)) {
+    return `<div class="launch">
       <div>
-        <strong>${done ? "You finished this survey." : "Ready when you are."}</strong>
-        <p>${done
-          ? "You can open it again if you need to. When you finish, you will come back to The Practice Room home page."
-          : "The survey opens in this window. Your study code goes with it, and when you finish you will come back to The Practice Room home page automatically. If you stop partway, click Start again later to pick up where you left off."}</p>
+        <strong>You finished this survey.</strong>
+        <p>Thank you. Your answers are saved. You can open the survey again in a new tab if you need to.</p>
       </div>
-      <a class="btn big" href="${esc(full)}">${done ? "Open the survey again" : "Start the survey"}</a>
+      <a class="btn ghost" href="${esc(full)}" target="_blank" rel="noopener">Open the survey again</a>
     </div>`;
+  }
+  return `<div class="survey-bar">
+      <p>The survey runs right here on this page, and your study code goes with it. If it does not load, or you want to stop and finish later, open it in a new tab.</p>
+      <a class="btn ghost" href="${esc(full)}" target="_blank" rel="noopener">Open in a new tab</a>
+    </div>
+    <iframe class="frame" src="${esc(full)}" title="${esc(label)} survey" allow="fullscreen; autoplay; encrypted-media"></iframe>`;
 }
 
 function moduleView(m) {
